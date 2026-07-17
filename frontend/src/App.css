@@ -1,0 +1,32 @@
+@import url("https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap");
+
+html,
+body,
+#root,
+.App {
+  min-height: 100%;
+  background: #ffffff;
+}
+
+.App {
+  font-family: "Lato", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  color: #0f172a;
+}
+
+aside::-webkit-scrollbar,
+.overflow-y-auto::-webkit-scrollbar {
+  width: 8px;
+}
+aside::-webkit-scrollbar-thumb,
+.overflow-y-auto::-webkit-scrollbar-thumb {
+  background: rgba(15, 23, 42, 0.12);
+  border-radius: 8px;
+}
+aside::-webkit-scrollbar-thumb:hover,
+.overflow-y-auto::-webkit-scrollbar-thumb:hover {
+  background: rgba(15, 23, 42, 0.2);
+}
+
+button {
+  font-family: inherit;
+}
