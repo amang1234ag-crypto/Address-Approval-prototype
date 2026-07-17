@@ -136,7 +136,7 @@ export const factCheckData = {
 export const downstreamData = {
   title: "Downstream Impact",
   subtitle: 'Did anything go wrong after the decision — not whether it was "correct"',
-  incidents: "0.6%",
+  incidents: "35",
   decisions: "38 / 6200",
   bySource: [
     { name: "Trip feedback complaints", value: 12 },
