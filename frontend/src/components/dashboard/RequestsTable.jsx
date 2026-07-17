@@ -2,6 +2,12 @@ import React from "react";
 import { ChevronRight, Info } from "lucide-react";
 import { motion } from "framer-motion";
 import { ConfidenceDots } from "./ConfidenceDots";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const VerdictBadge = ({ verdict }) => {
   const isRejected = verdict === "Rejected";
@@ -34,7 +40,32 @@ export const RequestsTable = ({ rows, onView }) => {
         <div>Why</div>
         <div className="flex items-center gap-1.5">
           Confidence
-          <Info size={13} className="text-slate-400" />
+          <TooltipProvider delayDuration={150} disableHoverableContent={false}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  type="button"
+                  aria-label="What is confidence?"
+                  data-testid="confidence-info-tooltip-trigger"
+                  className="inline-flex items-center justify-center text-slate-400 hover:text-slate-500 focus:outline-none cursor-default"
+                >
+                  <Info size={13} />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent
+                side="bottom"
+                align="start"
+                sideOffset={8}
+                data-testid="confidence-info-tooltip"
+                className="z-[60] w-[320px] max-w-[320px] rounded-md bg-[#0f2a4a] text-white px-3.5 py-2.5 text-[12.5px] leading-[1.55] font-normal normal-case tracking-normal shadow-[0_8px_24px_rgba(15,23,42,0.18)]"
+              >
+                Confidence is how sure the agent feels about its own decision.
+                It helps you decide which requests to review first, but it
+                doesn't tell you whether the decision is actually correct.
+                Think of it as a prioritization signal, not proof.
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
         <div>Decided</div>
         <div>Actions</div>
