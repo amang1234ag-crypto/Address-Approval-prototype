@@ -8,6 +8,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import * as TooltipPrimitive from "@radix-ui/react-tooltip";
 
 const VerdictBadge = ({ verdict }) => {
   const isRejected = verdict === "Rejected";
@@ -54,15 +55,20 @@ export const RequestsTable = ({ rows, onView }) => {
               </TooltipTrigger>
               <TooltipContent
                 side="bottom"
-                align="start"
-                sideOffset={8}
+                align="center"
+                sideOffset={10}
                 data-testid="confidence-info-tooltip"
-                className="z-[60] w-[320px] max-w-[320px] rounded-md bg-[#0f2a4a] text-white px-3.5 py-2.5 text-[12.5px] leading-[1.55] font-normal normal-case tracking-normal shadow-[0_8px_24px_rgba(15,23,42,0.18)]"
+                className="z-[60] w-[320px] max-w-[320px] rounded-md bg-[#181F33] text-white px-3.5 py-2.5 text-[12.5px] leading-[1.55] font-normal normal-case tracking-normal shadow-[0_8px_24px_rgba(15,23,42,0.18)] font-['Lato',ui-sans-serif,system-ui,sans-serif]"
               >
                 Confidence is how sure the agent feels about its own decision.
                 It helps you decide which requests to review first, but it
                 doesn't tell you whether the decision is actually correct.
                 Think of it as a prioritization signal, not proof.
+                <TooltipPrimitive.Arrow
+                  width={12}
+                  height={6}
+                  className="fill-[#181F33]"
+                />
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
