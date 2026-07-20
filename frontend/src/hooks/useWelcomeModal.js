@@ -5,13 +5,21 @@ import { useCallback, useEffect, useState } from "react";
  *
  * Single source of truth for the Welcome Modal's open state.
  *
- * Behaviour:
- *   - Opens automatically on first visit (persists a flag in localStorage
- *     under `welcomeModalSeen`).
- *   - Once dismissed, does not auto-open again on subsequent visits.
- *   - Exposes `openModal` so a future "Watch Product Walkthrough" CTA on
- *     the dashboard can re-open the same modal on demand. Manual re-opens
- *     do NOT clear the "seen" flag.
+ * Behaviour is controlled by the `persistDismissal` option:
+ *
+ *   persistDismissal: false  (DEFAULT — stakeholder demo mode)
+ *     - Modal auto-opens on EVERY dashboard load / tab refresh.
+ *     - Manual dismissal only closes it for the current session.
+ *     - No localStorage / no persistence.
+ *
+ *   persistDismissal: true   (first-time-only mode)
+ *     - Modal auto-opens once, then remembers the dismissal in
+ *       localStorage under `welcomeModalSeen` and does not
+ *       auto-open again on future visits.
+ *
+ * `openModal` is always available so a future
+ * "Watch Product Walkthrough" CTA on the dashboard can re-open the
+ * modal on demand regardless of mode.
  *
  * Returns:
  *   { open, setOpen, openModal, closeModal }
@@ -22,7 +30,6 @@ const readSeenFlag = () => {
   try {
     return window.localStorage.getItem(STORAGE_KEY) === "true";
   } catch {
-    // localStorage unavailable -> treat as unseen (safe default)
     return false;
   }
 };
@@ -35,28 +42,35 @@ const writeSeenFlag = () => {
   }
 };
 
-export function useWelcomeModal() {
+export function useWelcomeModal({ persistDismissal = false } = {}) {
   const [open, setOpenState] = useState(false);
 
-  // Auto-open on first visit only. Runs once on mount.
+  // Auto-open policy on mount.
+  //   - Demo mode (default): always open.
+  //   - Persist mode: open only if not previously seen.
   useEffect(() => {
-    if (!readSeenFlag()) {
+    if (persistDismissal) {
+      if (!readSeenFlag()) setOpenState(true);
+    } else {
       setOpenState(true);
     }
-  }, []);
+  }, [persistDismissal]);
 
-  // Wrapped setter: any transition to closed marks the modal as seen.
-  const setOpen = useCallback((nextOpen) => {
-    const value = typeof nextOpen === "function" ? nextOpen(false) : nextOpen;
-    if (!value) writeSeenFlag();
-    setOpenState(value);
-  }, []);
+  const setOpen = useCallback(
+    (nextOpen) => {
+      const value =
+        typeof nextOpen === "function" ? nextOpen(false) : nextOpen;
+      if (!value && persistDismissal) writeSeenFlag();
+      setOpenState(value);
+    },
+    [persistDismissal]
+  );
 
   const openModal = useCallback(() => setOpenState(true), []);
   const closeModal = useCallback(() => {
-    writeSeenFlag();
+    if (persistDismissal) writeSeenFlag();
     setOpenState(false);
-  }, []);
+  }, [persistDismissal]);
 
   return { open, setOpen, openModal, closeModal };
 }
