@@ -27,7 +27,7 @@ import { WALKTHROUGH_VIDEO_SOURCE } from "./videoConfig";
 export const WelcomeModal = ({
   open,
   onOpenChange,
-  title = "Welcome",
+  title = "Let's Get You Started",
   videoSource = WALKTHROUGH_VIDEO_SOURCE,
 }) => {
   return (
