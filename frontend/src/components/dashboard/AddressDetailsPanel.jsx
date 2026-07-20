@@ -390,10 +390,13 @@ export const AddressDetailsPanel = ({ open, onClose, request }) => {
                       </span>
                       <span
                         className={`inline-flex items-center px-2.5 py-0.5 rounded-md text-[13px] font-medium ${
-                          isRejected
-                            ? "bg-rose-100 text-rose-700"
-                            : "bg-emerald-100 text-emerald-700"
+                          isRejected ? "" : "bg-emerald-100 text-emerald-700"
                         }`}
+                        style={
+                          isRejected
+                            ? { backgroundColor: "#E0322E", color: "#FFFFFF" }
+                            : undefined
+                        }
                       >
                         {request?.verdict}
                       </span>
