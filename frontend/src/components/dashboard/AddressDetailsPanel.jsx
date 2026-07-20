@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, ChevronDown, ChevronUp, CheckCircle2, XCircle } from "lucide-react";
+import { X, ChevronDown, ChevronUp, CheckCircle2, XCircle, ThumbsUp, ThumbsDown, Flag } from "lucide-react";
 import { ConfidenceDots } from "./ConfidenceDots";
 import { buildCheckSequence } from "../../data/mockData";
 
@@ -16,6 +16,42 @@ const StatusBadge = ({ status }) => {
     >
       {status}
     </span>
+  );
+};
+
+// "Was this check right?" feedback control.
+// Rendered inside each check's expanded content — visibility is
+// therefore fully driven by the existing expand/collapse state and
+// no additional interactions are wired here.
+const CheckFeedback = ({ checkName }) => {
+  const slug = (checkName || "check").replace(/\s+/g, "-").toLowerCase();
+  return (
+    <div
+      data-testid={`check-feedback-${slug}`}
+      className="flex items-center justify-between gap-3 pt-3 mt-1 border-t border-slate-100"
+    >
+      <span className="text-[13px] text-slate-700">Was this check right?</span>
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          aria-label="Agree"
+          data-testid={`check-feedback-agree-${slug}`}
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[#E4F5E9] text-[#181F33] text-[13px] font-medium hover:brightness-95 transition"
+        >
+          <ThumbsUp size={14} strokeWidth={2} className="text-[#181F33]" />
+          Agree
+        </button>
+        <button
+          type="button"
+          aria-label="Disagree"
+          data-testid={`check-feedback-disagree-${slug}`}
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[#FAE1EA] text-[#181F33] text-[13px] font-medium hover:brightness-95 transition"
+        >
+          <ThumbsDown size={14} strokeWidth={2} className="text-[#181F33]" />
+          Disagree
+        </button>
+      </div>
+    </div>
   );
 };
 
@@ -227,6 +263,9 @@ const CheckRow = ({ check, defaultOpen = false, isFirst = false, isLast = false 
                       </div>
                     </div>
                   )}
+
+                  {/* Was this check right? — visible only within expanded content */}
+                  <CheckFeedback checkName={check.name} />
                 </div>
               </motion.div>
             )}
@@ -332,22 +371,52 @@ export const AddressDetailsPanel = ({ open, onClose, request }) => {
                 ))}
 
                 {/* Verdict footer */}
-                <div className="rounded-lg border border-slate-200 px-4 py-4 mt-6">
-                  <div className="flex items-center gap-3">
-                    <span className="text-[13px] font-medium text-slate-700">
-                      Agent verdict
-                    </span>
-                    <span
-                      className={`inline-flex items-center px-2.5 py-0.5 rounded-md text-[13px] font-medium ${
-                        isRejected
-                          ? "bg-rose-100 text-rose-700"
-                          : "bg-emerald-100 text-emerald-700"
-                      }`}
+                <div
+                  data-testid="agent-verdict-container"
+                  className="rounded-lg border px-4 py-4 mt-6"
+                  style={{
+                    backgroundColor: "#FDF2F4",
+                    borderColor: "#FED6D8",
+                    color: "#181F33",
+                  }}
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <span
+                        className="text-[13px] font-medium"
+                        style={{ color: "#181F33" }}
+                      >
+                        Agent verdict
+                      </span>
+                      <span
+                        className={`inline-flex items-center px-2.5 py-0.5 rounded-md text-[13px] font-medium ${
+                          isRejected
+                            ? "bg-rose-100 text-rose-700"
+                            : "bg-emerald-100 text-emerald-700"
+                        }`}
+                      >
+                        {request?.verdict}
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      data-testid="flag-verdict-btn"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[13px] font-medium bg-white transition hover:bg-slate-50"
+                      style={{
+                        borderWidth: 1,
+                        borderStyle: "solid",
+                        borderColor: "#CBD5E1",
+                        color: "#475569",
+                      }}
                     >
-                      {request?.verdict}
-                    </span>
+                      <Flag size={14} strokeWidth={2} />
+                      Flag this verdict
+                    </button>
                   </div>
-                  <p className="text-[13px] text-slate-600 mt-2">
+                  <p
+                    className="text-[13px] mt-2"
+                    style={{ color: "#181F33" }}
+                  >
                     {isRejected
                       ? "2 of 6 checks failed a hard threshold — the agent declined on its own."
                       : "All required checks passed — the agent approved on its own."}
