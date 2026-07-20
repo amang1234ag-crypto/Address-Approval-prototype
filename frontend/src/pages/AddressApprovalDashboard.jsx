@@ -17,8 +17,12 @@ import DownstreamImpactPopover from "../components/dashboard/DownstreamImpactPop
 import TrackRecordPopover from "../components/dashboard/TrackRecordPopover";
 import AddressDetailsPanel from "../components/dashboard/AddressDetailsPanel";
 import { trackEvent } from "@/lib/analytics";
+import WelcomeModal from "../components/welcome/WelcomeModal";
+import useWelcomeModal from "@/hooks/useWelcomeModal";
 
 export default function AddressApprovalDashboard() {
+  const welcome = useWelcomeModal();
+
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState(null);
 
@@ -270,6 +274,10 @@ export default function AddressApprovalDashboard() {
         onClose={handleCloseDetails}
         request={selectedRequest}
       />
+
+      {/* First-time Welcome Modal (also re-openable via any future CTA
+          calling welcome.openModal()) */}
+      <WelcomeModal open={welcome.open} onOpenChange={welcome.setOpen} />
     </div>
   );
 }
