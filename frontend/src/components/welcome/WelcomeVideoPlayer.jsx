@@ -68,6 +68,7 @@ export const WelcomeVideoPlayer = ({
           data-testid="welcome-video-mp4"
           className="absolute inset-0 h-full w-full bg-black"
           src={source.url}
+          poster={source.poster || undefined}
           controls
           playsInline
           preload="metadata"

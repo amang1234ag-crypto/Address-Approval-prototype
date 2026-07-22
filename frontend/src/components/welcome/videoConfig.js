@@ -12,4 +12,5 @@
 export const WALKTHROUGH_VIDEO_SOURCE = {
   type: "mp4",
   url: "/assets/videos/dashboard-walkthrough.mp4",
+  poster: "/assets/images/dashboard-walkthrough-poster.png",
 };
