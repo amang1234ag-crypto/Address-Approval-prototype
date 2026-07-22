@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, ChevronDown, ChevronUp, CheckCircle2, XCircle, ThumbsUp, ThumbsDown, Flag } from "lucide-react";
 import { ConfidenceDots } from "./ConfidenceDots";
 import { buildCheckSequence } from "../../data/mockData";
+import FlagVerdictModal from "./FlagVerdictModal";
+import DisagreeCheckModal from "./DisagreeCheckModal";
 
 const StatusBadge = ({ status }) => {
   const isPass = status === "PASS";
@@ -23,7 +25,7 @@ const StatusBadge = ({ status }) => {
 // Rendered inside each check's expanded content — visibility is
 // therefore fully driven by the existing expand/collapse state and
 // no additional interactions are wired here.
-const CheckFeedback = ({ checkName }) => {
+const CheckFeedback = ({ checkName, onDisagree }) => {
   const slug = (checkName || "check").replace(/\s+/g, "-").toLowerCase();
   return (
     <div
@@ -45,6 +47,7 @@ const CheckFeedback = ({ checkName }) => {
           type="button"
           aria-label="Disagree"
           data-testid={`check-feedback-disagree-${slug}`}
+          onClick={() => onDisagree && onDisagree(checkName)}
           className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[#FAE1EA] text-[#181F33] text-[13px] font-medium hover:brightness-95 transition"
         >
           <ThumbsDown size={14} strokeWidth={2} className="text-[#181F33]" />
@@ -55,7 +58,7 @@ const CheckFeedback = ({ checkName }) => {
   );
 };
 
-const CheckRow = ({ check, defaultOpen = false, isFirst = false, isLast = false }) => {
+const CheckRow = ({ check, defaultOpen = false, isFirst = false, isLast = false, onDisagreeCheck }) => {
   const [open, setOpen] = useState(defaultOpen);
   const isPass = check.status === "PASS";
 
@@ -265,7 +268,10 @@ const CheckRow = ({ check, defaultOpen = false, isFirst = false, isLast = false 
                   )}
 
                   {/* Was this check right? — visible only within expanded content */}
-                  <CheckFeedback checkName={check.name} />
+                  <CheckFeedback
+                    checkName={check.name}
+                    onDisagree={onDisagreeCheck}
+                  />
                 </div>
               </motion.div>
             )}
@@ -280,8 +286,18 @@ export const AddressDetailsPanel = ({ open, onClose, request }) => {
   const checks = request ? buildCheckSequence(request) : [];
   const isRejected = request?.verdict === "Rejected";
 
+  const [flagVerdictOpen, setFlagVerdictOpen] = useState(false);
+  const [disagreeOpen, setDisagreeOpen] = useState(false);
+  const [disagreeCheckName, setDisagreeCheckName] = useState(null);
+
+  const handleDisagreeCheck = (name) => {
+    setDisagreeCheckName(name);
+    setDisagreeOpen(true);
+  };
+
   return (
-    <AnimatePresence>
+    <>
+      <AnimatePresence>
       {open && (
         <>
           <motion.div
@@ -367,6 +383,7 @@ export const AddressDetailsPanel = ({ open, onClose, request }) => {
                     defaultOpen={c.status === "FAIL" && !!c.details}
                     isFirst={i === 0}
                     isLast={i === checks.length - 1}
+                    onDisagreeCheck={handleDisagreeCheck}
                   />
                 ))}
 
@@ -404,6 +421,7 @@ export const AddressDetailsPanel = ({ open, onClose, request }) => {
                     <button
                       type="button"
                       data-testid="flag-verdict-btn"
+                      onClick={() => setFlagVerdictOpen(true)}
                       className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[13px] font-medium bg-white transition hover:bg-slate-50"
                       style={{
                         borderWidth: 1,
@@ -430,7 +448,20 @@ export const AddressDetailsPanel = ({ open, onClose, request }) => {
           </motion.aside>
         </>
       )}
-    </AnimatePresence>
+      </AnimatePresence>
+
+      {/* Flagging modals — portaled, so mounted here so they persist
+          independently of the side panel's exit animation. */}
+      <FlagVerdictModal
+        open={flagVerdictOpen}
+        onOpenChange={setFlagVerdictOpen}
+      />
+      <DisagreeCheckModal
+        open={disagreeOpen}
+        onOpenChange={setDisagreeOpen}
+        checkName={disagreeCheckName}
+      />
+    </>
   );
 };
 
