@@ -10,6 +10,6 @@
  *   { type: "mp4",     url: "/walkthrough.mp4" }
  */
 export const WALKTHROUGH_VIDEO_SOURCE = {
-  type: "youtube",
-  url: "https://youtu.be/EDb37y_MhRw?si=alVXaoLEzbA-t7Nl",
+  type: "mp4",
+  url: "/assets/videos/dashboard-walkthrough.mp4",
 };
