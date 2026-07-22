@@ -24,17 +24,17 @@ const CHECK_OPTIONS = [
   "Marshal Route (dark hours)",
 ];
 
-const RadioRow = ({ value, checked, onSelect }) => (
+const CheckboxRow = ({ value, checked, onToggle }) => (
   <button
     type="button"
-    onClick={() => onSelect(value)}
+    onClick={() => onToggle(value)}
     data-testid={`flag-verdict-option-${value
       .replace(/\s+/g, "-")
       .toLowerCase()}`}
     className="w-full text-left flex items-center gap-3 px-3 py-3 rounded-md hover:bg-slate-50 transition"
   >
     <span
-      className={`shrink-0 inline-flex items-center justify-center w-[18px] h-[18px] rounded-full border-2 ${
+      className={`shrink-0 inline-flex items-center justify-center w-[18px] h-[18px] rounded-[4px] border-2 ${
         checked
           ? "bg-[#0937B2] border-[#0937B2]"
           : "bg-white border-slate-300"
@@ -58,18 +58,24 @@ const RadioRow = ({ value, checked, onSelect }) => (
 );
 
 export const FlagVerdictModal = ({ open, onOpenChange }) => {
-  const [reason, setReason] = useState(null);
+  const [reasons, setReasons] = useState([]);
   const [comments, setComments] = useState("");
 
   // Reset internal state every time the modal opens.
   useEffect(() => {
     if (open) {
-      setReason(null);
+      setReasons([]);
       setComments("");
     }
   }, [open]);
 
-  const isActive = !!reason;
+  const toggleReason = (value) => {
+    setReasons((prev) =>
+      prev.includes(value) ? prev.filter((r) => r !== value) : [...prev, value]
+    );
+  };
+
+  const isActive = reasons.length > 0;
   const buttonStyle = isActive
     ? { backgroundColor: "#0937B2", color: "#FFFFFF" }
     : { backgroundColor: "#F5F5F5", color: "#929DAB" };
@@ -110,11 +116,11 @@ export const FlagVerdictModal = ({ open, onOpenChange }) => {
             </div>
             <div className="rounded-lg border border-slate-200 divide-y divide-slate-100">
               {CHECK_OPTIONS.map((opt) => (
-                <RadioRow
+                <CheckboxRow
                   key={opt}
                   value={opt}
-                  checked={reason === opt}
-                  onSelect={setReason}
+                  checked={reasons.includes(opt)}
+                  onToggle={toggleReason}
                 />
               ))}
             </div>
